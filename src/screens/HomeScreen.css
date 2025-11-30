@@ -1,0 +1,266 @@
+.home-screen {
+  padding: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+  padding-bottom: 100px;
+}
+
+.home-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.home-header h1 {
+  font-size: 32px;
+  color: #1a1a1a;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  color: #666;
+  font-size: 14px;
+}
+
+.games-list h2 {
+  font-size: 20px;
+  margin-bottom: 16px;
+  color: #333;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #999;
+}
+
+.games-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.game-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.game-card:active {
+  transform: scale(0.98);
+}
+
+.game-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.game-card-header h3 {
+  font-size: 18px;
+  color: #1a1a1a;
+}
+
+.game-date {
+  font-size: 12px;
+  color: #999;
+}
+
+.game-card-info {
+  margin-bottom: 16px;
+}
+
+.game-card-info p {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.offenses-count {
+  font-size: 12px;
+  color: #999;
+}
+
+.game-card-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.btn-icon {
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 36px;
+  flex-shrink: 0;
+}
+
+.btn-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.btn-primary,
+.btn-secondary {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.btn-primary {
+  background: #007AFF;
+  color: white;
+}
+
+.btn-primary:active {
+  background: #0056CC;
+}
+
+.btn-secondary {
+  background: #f0f0f0;
+  color: #333;
+}
+
+.btn-secondary:active {
+  background: #e0e0e0;
+}
+
+.btn-secondary.btn-icon {
+  background: #e0e0e0;
+  color: white;
+}
+
+.btn-secondary.btn-icon svg {
+  color: white;
+}
+
+.btn-secondary.btn-icon:active {
+  background: #d0d0d0;
+}
+
+/* For dark mode support later, can be changed to dark */
+/* .btn-secondary.btn-icon svg { color: #333; } */
+
+.btn-create-game {
+  width: 100%;
+  padding: 16px;
+  background: #007AFF;
+  color: white;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 20px;
+}
+
+.btn-create-game:active {
+  background: #0056CC;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 400px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-content h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #1a1a1a;
+}
+
+.team-selection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.btn-team-option {
+  width: 100%;
+  padding: 14px;
+  background: #007AFF;
+  color: white;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-team-option:active:not(:disabled) {
+  background: #0056CC;
+}
+
+.btn-team-option:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.team-divider {
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+  margin: 8px 0;
+}
+
+.team-selection label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.team-selection label span {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+.team-selection select {
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.btn-cancel {
+  width: 100%;
+  padding: 14px;
+  background: #f0f0f0;
+  color: #333;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-cancel:active {
+  background: #e0e0e0;
+}
+
