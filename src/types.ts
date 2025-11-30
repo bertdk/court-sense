@@ -38,5 +38,8 @@ export interface Game {
   opponentTeam: { name: string };
   date: string;
   offenses: Offense[];
+  currentQuarter?: number; // 1-4 = quarters, 5+ = overtime periods
+  yourTeamScore?: number;
+  opponentScore?: number;
 }
 

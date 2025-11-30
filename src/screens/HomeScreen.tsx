@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Game } from '../types';
 import { saveGames, loadGames, deleteGame, getAllTeamNames, getTeamByName } from '../storage';
 import { DeleteIcon } from '../components/Icons';
+import ThemeToggle from '../components/ThemeToggle';
 import './HomeScreen.css';
 
 interface HomeScreenProps {
@@ -94,8 +95,11 @@ export default function HomeScreen({ games, setGames }: HomeScreenProps) {
   return (
     <div className="home-screen">
       <div className="home-header">
-        <h1>Court Sense</h1>
-        <p className="subtitle">Basketball Statistics Tracker</p>
+        <div>
+          <h1>Court Sense</h1>
+          <p className="subtitle">Basketball Statistics Tracker</p>
+        </div>
+        <ThemeToggle />
       </div>
 
       <div className="games-list">
@@ -113,8 +117,17 @@ export default function HomeScreen({ games, setGames }: HomeScreenProps) {
                 onClick={() => navigate(`/game/${game.id}/setup`)}
               >
                 <div className="game-card-header">
-                  <h3>{game.yourTeam.name || 'Unnamed Team'}</h3>
-                  <span className="game-date">{formatDate(game.date)}</span>
+                  <div>
+                    <h3>{game.yourTeam.name || 'Unnamed Team'}</h3>
+                    <span className="game-date">{formatDate(game.date)}</span>
+                  </div>
+                  <button
+                    className="btn-delete-icon"
+                    onClick={(e) => handleDeleteGame(game.id, e)}
+                    title="Delete game"
+                  >
+                    <DeleteIcon />
+                  </button>
                 </div>
                 <div className="game-card-info">
                   <p>
@@ -142,13 +155,6 @@ export default function HomeScreen({ games, setGames }: HomeScreenProps) {
                     }}
                   >
                     Play
-                  </button>
-                  <button
-                    className="btn-secondary btn-icon"
-                    onClick={(e) => handleDeleteGame(game.id, e)}
-                    title="Delete game"
-                  >
-                    <DeleteIcon />
                   </button>
                 </div>
               </div>

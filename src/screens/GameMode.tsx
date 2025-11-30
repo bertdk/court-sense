@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Game, Offense, OffenseResult } from '../types';
 import { getGame, saveGame } from '../storage';
 import { EditIcon } from '../components/Icons';
+import ThemeToggle from '../components/ThemeToggle';
 import './GameMode.css';
 
 export default function GameMode() {
@@ -16,6 +17,7 @@ export default function GameMode() {
   const [showShotOptions, setShowShotOptions] = useState(false);
   const [showTurnoverOptions, setShowTurnoverOptions] = useState(false);
   const [shotModalKey, setShotModalKey] = useState(0);
+  const [currentQuarter, setCurrentQuarter] = useState<number>(1);
   const intervalRef = useRef<number | null>(null);
   const startTimeRef = useRef<number>(0);
 
@@ -45,6 +47,21 @@ export default function GameMode() {
           setGame(migratedGame);
         } else {
           setGame(loadedGame);
+        }
+        
+        // Initialize quarter
+        if (loadedGame.currentQuarter) {
+          setCurrentQuarter(loadedGame.currentQuarter);
+        } else {
+          setCurrentQuarter(1);
+        }
+        
+        // Initialize score if not set
+        if (loadedGame.yourTeamScore === undefined && loadedGame.offenses.length > 0) {
+          const score = calculateScore(loadedGame);
+          const updatedGame = { ...loadedGame, yourTeamScore: score };
+          saveGame(updatedGame);
+          setGame(updatedGame);
         }
         
         // Initialize with first 5 players on court by default
@@ -165,6 +182,19 @@ export default function GameMode() {
     resetOffense();
   };
 
+  const calculateScore = (game: Game): number => {
+    return game.offenses.reduce((score, offense) => {
+      if (offense.result.type === 'score') {
+        return score + (offense.result.points || 0);
+      }
+      if (offense.result.type === 'foul') {
+        const madeShots = offense.result.foulShots?.filter(s => s.made === true).length || 0;
+        return score + madeShots;
+      }
+      return score;
+    }, 0);
+  };
+
   const saveOffense = (result: OffenseResult) => {
     if (!game || time === 0) return;
 
@@ -177,11 +207,25 @@ export default function GameMode() {
       timestamp: Date.now(),
     };
 
+    const updatedOffenses = [...game.offenses, offense];
     const updatedGame: Game = {
       ...game,
-      offenses: [...game.offenses, offense],
+      offenses: updatedOffenses,
+      yourTeamScore: calculateScore({ ...game, offenses: updatedOffenses }),
+      currentQuarter: currentQuarter || 1,
     };
 
+    saveGame(updatedGame);
+    setGame(updatedGame);
+  };
+
+  const updateQuarter = (quarter: number) => {
+    if (!game || quarter < 1) return;
+    setCurrentQuarter(quarter);
+    const updatedGame: Game = {
+      ...game,
+      currentQuarter: quarter,
+    };
     saveGame(updatedGame);
     setGame(updatedGame);
   };
@@ -247,11 +291,8 @@ export default function GameMode() {
         <button className="btn-back" onClick={() => navigate('/')}>
           ← Home
         </button>
-        <div className="game-info">
-          <h2>{game.yourTeam.name}</h2>
-          <p>vs {game.opponentTeam.name}</p>
-        </div>
         <div className="header-actions">
+          <ThemeToggle />
           <button
             className="btn-secondary btn-icon"
             onClick={() => navigate(`/game/${gameId}/edit`)}
@@ -267,8 +308,45 @@ export default function GameMode() {
           </button>
         </div>
       </div>
+      
+      <div className="game-info">
+        <div className="game-info-left">
+          <h2>{game.yourTeam.name}</h2>
+          <p>vs {game.opponentTeam.name}</p>
+        </div>
+        <div className="game-info-right">
+          <div className="score-display">
+            <span className="score-label">Score:</span>
+            <span className="score-value">{game.yourTeamScore || 0}</span>
+          </div>
+        </div>
+      </div>
 
       <div className="clock-section">
+        <div className="quarter-selector">
+          <span className="quarter-label">Quarter:</span>
+          <div className="quarter-controls">
+            <button
+              className="btn-quarter-adjust"
+              onClick={() => updateQuarter(currentQuarter - 1)}
+              disabled={isRunning || currentQuarter <= 1}
+              title="Previous quarter"
+            >
+              ↓
+            </button>
+            <div className="quarter-display">
+              {currentQuarter <= 4 ? `Q${currentQuarter}` : `OT${currentQuarter - 4}`}
+            </div>
+            <button
+              className="btn-quarter-adjust"
+              onClick={() => updateQuarter(currentQuarter + 1)}
+              disabled={isRunning}
+              title="Next quarter"
+            >
+              ↑
+            </button>
+          </div>
+        </div>
         <div className="clock-display">
           <div className="clock-time-wrapper">
             <button
@@ -289,7 +367,6 @@ export default function GameMode() {
               +
             </button>
           </div>
-          <div className="clock-label">Offense Time</div>
         </div>
         <div className="clock-controls">
           <button

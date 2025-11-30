@@ -6,31 +6,38 @@
 }
 
 .home-header {
-  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   margin-bottom: 30px;
+}
+
+.home-header > div {
+  flex: 1;
+  text-align: center;
 }
 
 .home-header h1 {
   font-size: 32px;
-  color: #1a1a1a;
+  color: var(--text-primary);
   margin-bottom: 8px;
 }
 
 .subtitle {
-  color: #666;
+  color: var(--text-secondary);
   font-size: 14px;
 }
 
 .games-list h2 {
   font-size: 20px;
   margin-bottom: 16px;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .empty-state {
   text-align: center;
   padding: 40px 20px;
-  color: #999;
+  color: var(--text-tertiary);
 }
 
 .games-grid {
@@ -41,12 +48,13 @@
 }
 
 .game-card {
-  background: white;
+  background: var(--bg-primary);
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px var(--shadow);
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid var(--border-color);
 }
 
 .game-card:active {
@@ -56,18 +64,50 @@
 .game-card-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 12px;
+  position: relative;
+}
+
+.game-card-header > div {
+  flex: 1;
 }
 
 .game-card-header h3 {
   font-size: 18px;
-  color: #1a1a1a;
+  color: var(--text-primary);
+  margin-bottom: 4px;
 }
 
 .game-date {
   font-size: 12px;
-  color: #999;
+  color: var(--text-tertiary);
+}
+
+.btn-delete-icon {
+  background: transparent;
+  border: none;
+  padding: 4px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+  flex-shrink: 0;
+}
+
+.btn-delete-icon:hover {
+  color: var(--accent-danger);
+}
+
+.btn-delete-icon:active {
+  transform: scale(0.9);
+}
+
+.btn-delete-icon svg {
+  width: 18px;
+  height: 18px;
 }
 
 .game-card-info {
@@ -76,13 +116,13 @@
 
 .game-card-info p {
   font-size: 14px;
-  color: #666;
+  color: var(--text-secondary);
   margin-bottom: 4px;
 }
 
 .offenses-count {
   font-size: 12px;
-  color: #999;
+  color: var(--text-tertiary);
 }
 
 .game-card-actions {
@@ -116,21 +156,21 @@
 }
 
 .btn-primary {
-  background: #007AFF;
-  color: white;
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
 }
 
 .btn-primary:active {
-  background: #0056CC;
+  background: var(--accent-primary-hover);
 }
 
 .btn-secondary {
-  background: #f0f0f0;
-  color: #333;
+  background: var(--btn-secondary-bg);
+  color: var(--btn-secondary-text);
 }
 
 .btn-secondary:active {
-  background: #e0e0e0;
+  background: var(--btn-secondary-hover);
 }
 
 .btn-secondary.btn-icon {
@@ -159,8 +199,8 @@
 .btn-create-game {
   width: 100%;
   padding: 16px;
-  background: #007AFF;
-  color: white;
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
   border-radius: 12px;
   font-size: 16px;
   font-weight: 600;
@@ -168,7 +208,7 @@
 }
 
 .btn-create-game:active {
-  background: #0056CC;
+  background: var(--accent-primary-hover);
 }
 
 .modal-overlay {
@@ -186,19 +226,20 @@
 }
 
 .modal-content {
-  background: white;
+  background: var(--bg-primary);
   border-radius: 16px;
   padding: 24px;
   max-width: 400px;
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
+  border: 1px solid var(--border-color);
 }
 
 .modal-content h2 {
   font-size: 24px;
   margin-bottom: 20px;
-  color: #1a1a1a;
+  color: var(--text-primary);
 }
 
 .team-selection {
@@ -211,8 +252,8 @@
 .btn-team-option {
   width: 100%;
   padding: 14px;
-  background: #007AFF;
-  color: white;
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
   border-radius: 8px;
   font-size: 16px;
   font-weight: 500;
@@ -221,7 +262,7 @@
 }
 
 .btn-team-option:active:not(:disabled) {
-  background: #0056CC;
+  background: var(--accent-primary-hover);
 }
 
 .btn-team-option:disabled {
@@ -231,7 +272,7 @@
 
 .team-divider {
   text-align: center;
-  color: #666;
+  color: var(--text-secondary);
   font-size: 14px;
   margin: 8px 0;
 }
@@ -245,21 +286,23 @@
 .team-selection label span {
   font-size: 14px;
   font-weight: 500;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .team-selection select {
   padding: 12px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   font-size: 16px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
 }
 
 .btn-cancel {
   width: 100%;
   padding: 14px;
-  background: #f0f0f0;
-  color: #333;
+  background: var(--btn-secondary-bg);
+  color: var(--btn-secondary-text);
   border-radius: 8px;
   font-size: 16px;
   font-weight: 500;
@@ -268,6 +311,6 @@
 }
 
 .btn-cancel:active {
-  background: #e0e0e0;
+  background: var(--btn-secondary-hover);
 }
 
