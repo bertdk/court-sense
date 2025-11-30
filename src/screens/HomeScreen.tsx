@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Game } from '../types';
-import { saveGames, loadGames, deleteGame, getAllTeamNames, getTeamByName, saveTeam } from '../storage';
+import { saveGames, loadGames, deleteGame, getAllTeamNames, getTeamByName } from '../storage';
 import { DeleteIcon } from '../components/Icons';
 import './HomeScreen.css';
 
@@ -13,7 +13,6 @@ interface HomeScreenProps {
 export default function HomeScreen({ games, setGames }: HomeScreenProps) {
   const navigate = useNavigate();
   const [showTeamSelection, setShowTeamSelection] = useState(false);
-  const [selectedTeamName, setSelectedTeamName] = useState<string>('');
 
   // Reload games from storage when component mounts or when navigating back
   useEffect(() => {
@@ -34,15 +33,15 @@ export default function HomeScreen({ games, setGames }: HomeScreenProps) {
     const existingTeams = getAllTeamNames();
     // If no teams exist, go directly to create new team
     if (existingTeams.length === 0) {
-      handleTeamSelection(false);
+      handleTeamSelection();
     } else {
       setShowTeamSelection(true);
     }
   };
 
-  const handleTeamSelection = (useExisting: boolean) => {
-    if (useExisting && selectedTeamName) {
-      const existingTeam = getTeamByName(selectedTeamName);
+  const handleTeamSelection = (teamName?: string) => {
+    if (teamName) {
+      const existingTeam = getTeamByName(teamName);
       if (existingTeam) {
         const newGame: Game = {
           id: Date.now().toString(),
@@ -171,7 +170,7 @@ export default function HomeScreen({ games, setGames }: HomeScreenProps) {
                 className="btn-team-option"
                 onClick={() => {
                   setShowTeamSelection(false);
-                  handleTeamSelection(false);
+                  handleTeamSelection();
                 }}
               >
                 Create New Team
@@ -182,8 +181,15 @@ export default function HomeScreen({ games, setGames }: HomeScreenProps) {
                   <label>
                     <span>Select Existing Team</span>
                     <select
-                      value={selectedTeamName}
-                      onChange={(e) => setSelectedTeamName(e.target.value)}
+                      defaultValue=""
+                      onChange={(e) => {
+                        const teamName = e.target.value;
+                        if (teamName) {
+                          // Auto-create game when team is selected
+                          setShowTeamSelection(false);
+                          handleTeamSelection(teamName);
+                        }
+                      }}
                     >
                       <option value="">Choose a team...</option>
                       {getAllTeamNames().map((name) => (
@@ -193,18 +199,6 @@ export default function HomeScreen({ games, setGames }: HomeScreenProps) {
                       ))}
                     </select>
                   </label>
-                  <button
-                    className="btn-team-option"
-                    onClick={() => {
-                      if (selectedTeamName) {
-                        setShowTeamSelection(false);
-                        handleTeamSelection(true);
-                      }
-                    }}
-                    disabled={!selectedTeamName}
-                  >
-                    Use Selected Team
-                  </button>
                 </>
               )}
             </div>

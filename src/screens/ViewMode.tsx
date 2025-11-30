@@ -10,7 +10,7 @@ export default function ViewMode() {
   const { gameId } = useParams<{ gameId: string }>();
   const navigate = useNavigate();
   const [game, setGame] = useState<Game | null>(null);
-  const [viewType, setViewType] = useState<ViewType>('list');
+  const [viewType, setViewType] = useState<ViewType>('dashboard');
 
   useEffect(() => {
     const loadGame = () => {
@@ -198,8 +198,167 @@ function DashboardView({ game }: { game: Game }) {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  // Calculate individual player stats
+  const calculatePlayerStats = () => {
+    const playerStats = new Map<string, {
+      name: string;
+      offenses: Offense[];
+      totalPasses: number;
+      totalTime: number;
+      scores: number;
+      turnovers: number;
+      twoPointAttempts: number;
+      twoPointScores: number;
+      threePointAttempts: number;
+      threePointScores: number;
+    }>();
+
+    // Initialize all players
+    game.yourTeam.players.forEach(player => {
+      playerStats.set(player.id, {
+        name: player.name,
+        offenses: [],
+        totalPasses: 0,
+        totalTime: 0,
+        scores: 0,
+        turnovers: 0,
+        twoPointAttempts: 0,
+        twoPointScores: 0,
+        threePointAttempts: 0,
+        threePointScores: 0,
+      });
+    });
+
+    // Team stats (unassigned)
+    const teamStats = {
+      name: 'Team',
+      offenses: [] as Offense[],
+      totalPasses: 0,
+      totalTime: 0,
+      scores: 0,
+      turnovers: 0,
+      twoPointAttempts: 0,
+      twoPointScores: 0,
+      threePointAttempts: 0,
+      threePointScores: 0,
+    };
+
+    // Process each offense
+    offenses.forEach(offense => {
+      const playerId = offense.result.playerId;
+      const stats = playerId ? playerStats.get(playerId) : teamStats;
+
+      if (stats) {
+        stats.offenses.push(offense);
+        stats.totalPasses += offense.passes;
+        stats.totalTime += offense.time;
+
+        if (offense.result.type === 'score') {
+          stats.scores++;
+          if (offense.result.shotType === 2) {
+            stats.twoPointAttempts++;
+            stats.twoPointScores++;
+          } else if (offense.result.shotType === 3) {
+            stats.threePointAttempts++;
+            stats.threePointScores++;
+          }
+        } else if (offense.result.type === 'turnover') {
+          stats.turnovers++;
+        } else if (offense.result.type === 'miss' || offense.result.type === 'foul') {
+          // Count as attempt if it was a shot (has shotType)
+          if (offense.result.shotType === 2) {
+            stats.twoPointAttempts++;
+          } else if (offense.result.shotType === 3) {
+            stats.threePointAttempts++;
+          }
+        }
+      }
+    });
+
+    return { playerStats, teamStats };
+  };
+
+  const { playerStats, teamStats } = calculatePlayerStats();
+
+  // Calculate totals
+  const totalStats = {
+    name: 'Total',
+    offenses: offenses.length,
+    totalPasses,
+    totalTime,
+    scores,
+    turnovers,
+    twoPointAttempts: Array.from(playerStats.values()).reduce((sum, s) => sum + s.twoPointAttempts, 0) + teamStats.twoPointAttempts,
+    twoPointScores: Array.from(playerStats.values()).reduce((sum, s) => sum + s.twoPointScores, 0) + teamStats.twoPointScores,
+    threePointAttempts: Array.from(playerStats.values()).reduce((sum, s) => sum + s.threePointAttempts, 0) + teamStats.threePointAttempts,
+    threePointScores: Array.from(playerStats.values()).reduce((sum, s) => sum + s.threePointScores, 0) + teamStats.threePointScores,
+  };
+
   return (
     <div className="dashboard-view">
+      <div className="dashboard-section">
+        <h2>Individual Stats</h2>
+        {totalOffenses === 0 ? (
+          <p className="empty-text">No offenses tracked yet. Start a game to see individual stats!</p>
+        ) : (
+          <div className="stats-table-container">
+            <table className="stats-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Avg Passes</th>
+                  <th>Avg Time</th>
+                  <th>Score %</th>
+                  <th>Turnovers</th>
+                  <th>2P</th>
+                  <th>3P</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Array.from(playerStats.values())
+                  .filter(s => s.offenses.length > 0)
+                  .map((stats) => {
+                    const avgPasses = stats.offenses.length > 0 ? stats.totalPasses / stats.offenses.length : 0;
+                    const avgTime = stats.offenses.length > 0 ? stats.totalTime / stats.offenses.length : 0;
+                    const scorePercentage = stats.offenses.length > 0 ? (stats.scores / stats.offenses.length * 100) : 0;
+                    return (
+                      <tr key={stats.name}>
+                        <td>{stats.name}</td>
+                        <td>{avgPasses.toFixed(1)}</td>
+                        <td>{formatTime(Math.round(avgTime))}</td>
+                        <td>{scorePercentage.toFixed(1)}%</td>
+                        <td>{stats.turnovers}</td>
+                        <td>{stats.twoPointScores}/{stats.twoPointAttempts}</td>
+                        <td>{stats.threePointScores}/{stats.threePointAttempts}</td>
+                      </tr>
+                    );
+                  })}
+                {teamStats.offenses.length > 0 && (
+                  <tr className="team-row">
+                    <td>{teamStats.name}</td>
+                    <td>{(teamStats.totalPasses / teamStats.offenses.length).toFixed(1)}</td>
+                    <td>{formatTime(Math.round(teamStats.totalTime / teamStats.offenses.length))}</td>
+                    <td>{(teamStats.scores / teamStats.offenses.length * 100).toFixed(1)}%</td>
+                    <td>{teamStats.turnovers}</td>
+                    <td>{teamStats.twoPointScores}/{teamStats.twoPointAttempts}</td>
+                    <td>{teamStats.threePointScores}/{teamStats.threePointAttempts}</td>
+                  </tr>
+                )}
+                <tr className="total-row">
+                  <td><strong>{totalStats.name}</strong></td>
+                  <td><strong>{avgPasses.toFixed(1)}</strong></td>
+                  <td><strong>{formatTime(Math.round(avgTime))}</strong></td>
+                  <td><strong>{(scores / totalOffenses * 100).toFixed(1)}%</strong></td>
+                  <td><strong>{turnovers}</strong></td>
+                  <td><strong>{totalStats.twoPointScores}/{totalStats.twoPointAttempts}</strong></td>
+                  <td><strong>{totalStats.threePointScores}/{totalStats.threePointAttempts}</strong></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
       <div className="dashboard-section">
         <h2>Team Totals</h2>
         <div className="stats-grid">

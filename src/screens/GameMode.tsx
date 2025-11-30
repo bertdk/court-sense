@@ -15,8 +15,6 @@ export default function GameMode() {
   const [playersOnCourt, setPlayersOnCourt] = useState<string[]>([]);
   const [showShotOptions, setShowShotOptions] = useState(false);
   const [showTurnoverOptions, setShowTurnoverOptions] = useState(false);
-  const [showTimeAdjust, setShowTimeAdjust] = useState(false);
-  const [timeAdjustValue, setTimeAdjustValue] = useState('');
   const [shotModalKey, setShotModalKey] = useState(0);
   const intervalRef = useRef<number | null>(null);
   const startTimeRef = useRef<number>(0);
@@ -88,7 +86,7 @@ export default function GameMode() {
       intervalRef.current = window.setInterval(() => {
         const elapsed = Date.now() - startTimeRef.current;
         setTime(elapsed);
-      }, 10); // Update every 100ms for smooth milliseconds display
+      }, 10); // Update every 10ms for smooth milliseconds display
     } else {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
@@ -204,11 +202,6 @@ export default function GameMode() {
         alert('Maximum 5 players on court');
       }
     }
-  };
-
-  const getPlayersOnCourt = () => {
-    if (!game) return [];
-    return game.yourTeam.players.filter(p => playersOnCourt.includes(p.id));
   };
 
   if (!game) {

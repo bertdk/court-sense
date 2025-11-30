@@ -36,20 +36,27 @@
 }
 
 .btn-secondary.btn-icon {
-  background: #e0e0e0;
-  color: white;
+  background: transparent;
+  border: none;
+  padding: 8px;
+  color: #666;
 }
 
 .btn-secondary.btn-icon svg {
-  color: white;
+  color: #666;
+  transition: color 0.2s;
 }
 
-.btn-secondary.btn-icon:active {
-  background: #d0d0d0;
+.btn-secondary.btn-icon:hover svg {
+  color: #333;
 }
 
-/* For dark mode support later, can be changed to dark */
-/* .btn-secondary.btn-icon svg { color: #333; } */
+.btn-secondary.btn-icon:active svg {
+  color: #000;
+}
+
+/* For dark mode support later, can be changed to white */
+/* .btn-secondary.btn-icon svg { color: #fff; } */
 
 .header-actions {
   display: flex;
